@@ -59,6 +59,7 @@ namespace StarterAssets
 
 		private GameObject _heldObj;
 		private Rigidbody _heldObjRB;
+		public LayerMask _pickupLayers;
 
 		// cinemachine
 		private float _cinemachineTargetPitch;
@@ -312,10 +313,12 @@ namespace StarterAssets
     
 		private void PickupObject(GameObject pickObj)
 		{
-			if (!pickObj.GetComponent<Rigidbody>()) 
-				return;
-        
+			var bodyLayerMask = 1 << pickObj.gameObject.layer;
 			_heldObjRB = pickObj.GetComponent<Rigidbody>();
+			
+			if (!pickObj.GetComponent<Rigidbody>() || (bodyLayerMask & _pickupLayers.value) == 0 || _heldObjRB.isKinematic) 
+				return;
+			
 			_heldObjRB.useGravity = false;
 			_heldObjRB.drag = 10;
 			_heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
